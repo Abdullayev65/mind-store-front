@@ -5,14 +5,16 @@
       <img class="mb-4" :src="logo" alt="" width="100">
       <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
-      <Input :label="'Name'" :type="'text'"  v-model="name" />
-      <Input :label="'Email address'" :type="'email'"  v-model="email" />
-      <Input :label="'Password'" :type="'password'"  v-model="password" />
+      <ValidationErr v-if="validationErrs" :validationErrs="validationErrs" />
+      <Input :label="'Name'" :type="'text'" v-model="name"/>
+      <Input :label="'Email address'" :type="'email'" v-model="email"/>
+      <Input :label="'Password'" :type="'password'" v-model="password"/>
 
       <Button type="submit"
               @click="submitHandler"
               :disabled="isLoading">
-        Sign in</Button>
+        Sign in
+      </Button>
     </form>
   </main>
 
@@ -21,15 +23,17 @@
 <script>
 import {logo} from '@/constants'
 import Input from "@/ui-components/Input.vue";
+import localStore from "@/helpers/persistaneStorage.js";
+import ValidationErr from "@/components/ValidationErr.vue";
 
 export default {
-  components: {Input},
+  components: {ValidationErr, Input},
   data() {
     return {
       logo,
-      name : '',
-      email : '',
-      password : '',
+      name: '',
+      email: '',
+      password: '',
     }
   },
   methods: {
@@ -43,14 +47,25 @@ export default {
       }
       console.log(this)
       this.$store.dispatch("register", data).then(user => {
+        localStore.setItem('token', user.token)
         this.$router.push({name: 'home'})
+      }).catch(err => {
+        console.log(err)
       })
     }
   },
   computed: {
-      isLoading() {
-        return this.$store.state.auth.isLoading
+    isLoading() {
+      return this.$store.state.auth.isLoading
+    },
+    validationErrs() {
+      if (!this.$store.state.auth.err) {
+        return false
       }
+      const arr = {msg: this.$store.state.auth.err}
+      return arr
+    },
+
   },
 }
 </script>
