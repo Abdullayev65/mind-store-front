@@ -45,7 +45,7 @@ export default {
         password: this.password,
         first_name: this.name,
       }
-      console.log(this)
+
       this.$store.dispatch("register", data).then(user => {
         localStore.setItem('token', user.token)
         this.$router.push({name: 'home'})

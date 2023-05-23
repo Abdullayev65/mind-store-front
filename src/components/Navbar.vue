@@ -4,27 +4,36 @@
       <img :src="logo" alt="logo" class="logo" style="cursor: pointer"/>
     </a>
 
-    <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-      <RouterLink
-          :to="{name: 'register'}"
-          class="me-3 py-2 text-dark text-decoration-none"> Register
-      </RouterLink>
-      <RouterLink
-          :to="{name: 'login'}"
-          class="me-3 py-2 text-dark text-decoration-none"> Login
-      </RouterLink>
-      <RouterLink
-          :to="{name: 'home'}"
-          class="me-3 py-2 text-dark text-decoration-none"> Logout
-      </RouterLink>
+    <template v-if="isLoggedIn">
+      <span>
+      {{user.username}}
+      </span>
 
-    </nav>
+    </template>
+    <template v-else>
+      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+        <RouterLink
+            :to="{name: 'register'}"
+            class="me-3 py-2 text-dark text-decoration-none"> Register
+        </RouterLink>
+        <RouterLink
+            :to="{name: 'login'}"
+            class="me-3 py-2 text-dark text-decoration-none"> Login
+        </RouterLink>
+        <RouterLink
+            :to="{name: 'home'}"
+            class="me-3 py-2 text-dark text-decoration-none"> Logout
+        </RouterLink>
+
+      </nav>
+    </template>
   </div>
 </template>
 
 <script>
 // import {mapGetters} from 'vuex'
 import {logo} from '@/constants'
+import {mapState} from "vuex";
 
 export default {
   data() {
@@ -37,6 +46,12 @@ export default {
       return this.$router.push({name: "home"})
     }
   },
+  computed: {
+    ...mapState({
+      user: state => state.auth.user,
+      isLoggedIn: state => state.auth.isLoggedIn,
+    })
+  }
 }
 </script>
 
