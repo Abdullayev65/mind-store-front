@@ -7,6 +7,9 @@ const AuthService = {
     login(user) {
         return axios.post("auth/log-in", user)
     },
+    getUser() {
+        return axios.get('user/me')
+    }
 }
 
 

@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import uiComponents from "@/ui-components/idex";
 import store from "@/store";
+import _ from "./index.css"
 
 const app = createApp(App)
 

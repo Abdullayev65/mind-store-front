@@ -43,6 +43,24 @@ const mutations = {
         state.err = err
         state.isLoggedIn = false
     },
+    currentUserStart(state) {
+        state.isLoading = true
+    },
+    currentUserSuccess(state, user) {
+        state.isLoading = false
+        state.user = user
+        state.isLoggedIn = true
+    },
+    currentUserFail(state, err) {
+        state.isLoading = false
+        state.err = err
+        state.user = null
+        state.isLoggedIn = false
+    },
+    logout(state) {
+        state.user = null
+        state.isLoggedIn = false
+    },
 }
 
 const actions = {
@@ -87,6 +105,33 @@ const actions = {
                     ctx.commit('loginFail')
                     console.log(`err:`, err)
                 })
+        })
+    },
+    getUser(ctx) {
+        return new Promise((resolve, reject) => {
+            ctx.commit('currentUserStart')
+
+            AuthService.getUser()
+                .then((res) => {
+                    if (res.data['status']) {
+                        const user = res.data['res']
+                        ctx.commit('currentUserSuccess', user)
+                        resolve(user)
+                    } else {
+                        ctx.commit('currentUserFail', res.data['msg'])
+                        reject(res.data['msg'])
+                    }
+                })
+                .catch((err) => {
+                    ctx.commit('currentUserFail')
+                    console.log(`err:`, err)
+                })
+        })
+    },
+    logout(ctx) {
+        return new Promise((resolve, reject) => {
+            ctx.commit('logout')
+            localStore.removeItem('token')
         })
     },
 }

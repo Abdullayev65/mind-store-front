@@ -13,7 +13,14 @@ const localStore = {
         } catch (err) {
             console.log('ERR in saving data in localStore', err)
         }
-    }
+    },
+    removeItem(key) {
+        try {
+            localStorage.removeItem(key)
+        } catch (err) {
+            console.log('ERR in removing data in localStore', err)
+        }
+    },
 }
 
 export default localStore
