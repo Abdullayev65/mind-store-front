@@ -8,6 +8,18 @@ const state = {
     isLoggedIn: false
 }
 
+const getters = {
+    auth__user: state => {
+        return state.user
+    },
+    auth__isLoggedIn: state => {
+        return Boolean(state.isLoggedIn)
+    },
+    auth__isAnonymous: state => {
+        return state.isLoggedIn === false
+    },
+}
+
 const mutations = {
     registerStart(state) {
         state.isLoading = true
@@ -123,8 +135,9 @@ const actions = {
                     }
                 })
                 .catch((err) => {
-                    ctx.commit('currentUserFail')
+                    ctx.commit('currentUserFail', err)
                     console.log(`err:`, err)
+                    reject(err)
                 })
         })
     },
@@ -140,6 +153,7 @@ const auth = {
     state,
     mutations,
     actions,
+    getters,
 }
 
 export default auth

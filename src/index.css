@@ -1,3 +1,16 @@
 .cursor-pointer {
     cursor: pointer;
 }
+.my-text {
+    color: mediumseagreen;
+    font-weight: bold;
+    font-size: 1.27rem;
+}
+.my-btn {
+    color: cadetblue;
+    font-weight: bold;
+    font-size: 1.27rem;
+}
+.my-btn:hover {
+    color: royalblue;
+}

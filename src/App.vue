@@ -1,12 +1,12 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import {RouterLink, RouterView} from 'vue-router'
 </script>
 
 <template>
   <div class="container">
 
-    <Navbar />
-    <RouterView />
+    <Navbar/>
+    <RouterView/>
   </div>
 
 </template>
@@ -21,6 +21,10 @@ export default {
   },
   mounted() {
     this.$store.dispatch('getUser')
+        .catch(() => {
+          this.$router.push({name: "login"})
+        })
+
   }
 }
 </script>
