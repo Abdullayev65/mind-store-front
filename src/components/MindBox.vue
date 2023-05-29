@@ -18,15 +18,108 @@
            :class="mind.access==99?'fa-users':'fa-user'"
            @click="clickOnAccess">
         </i>
-        <i v-if="mind._can_hash" class="mind-btn hashing-btn">h#shing</i>
-        <i v-if="mind.hashed_id" class="mind-btn hashed-btn">h#shed</i>
-      </div>
+        <i v-if="mind._can_hash"
+           @click="model_open_enter_hashword=true"
+           class="mind-btn hashing-btn">
+          h#shing</i>
 
+        <div v-if="model_open_enter_hashword"
+             style="display: block"
+             class="modal">
+          <div class="modal-dialog modal-dialog-centered"
+               role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Enter Hashword for topic `{{ mind.topic }}`</h4>
+              </div>
+              <div class="modal-header">
+                <h6 class="modal-title text-danger">Make sure you can remember this hashword.
+                  Because if you forget it, we can not help to returning it, because we don't save it </h6>
+              </div>
+              <div class="modal-body">
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                  </div>
+                  <input type="text"
+                         class="form-control"
+                         placeholder="h#shword..."
+                         style="border-radius: 0.7rem"
+                         :disabled="loadForHashOnHashingModal"
+                         v-model="mind._hashword">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal"
+                        @click="model_open_enter_hashword=false">Close
+                </button>
+                <button type="button"
+                        class="btn btn-primary"
+                        :disabled="!mind._hashword || loadForHashOnHashingModal"
+                        @click="clickOnHashInModal">
+                  Hash
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <i v-if="mind.hashed_id && !mind._hashword"
+           @click="model_set_hashword=true"
+           class="mind-btn set-hashword-btn">
+          set_h#shword</i>
+
+        <div v-if="model_set_hashword"
+             style="display: block"
+             class="modal">
+          <div class="modal-dialog modal-dialog-centered"
+               role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Enter Hashword for topic `{{ mind.topic }}`</h4>
+              </div>
+              <div class="modal-header">
+                <h6 class="modal-title">hashword for mind in id`{{ mind.hashed_id }}`</h6>
+              </div>
+              <div class="modal-body">
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                  </div>
+                  <input type="text"
+                         class="form-control"
+                         placeholder="h#shword..."
+                         style="border-radius: 0.7rem"
+                         v-model="mind._hashword">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal"
+                        @click="model_set_hashword=false">Close
+                </button>
+                <button type="button"
+                        class="btn btn-primary"
+                        :disabled="!mind._hashword || loadForHashOnHashingModal"
+                        @click="clickOnSetHashWordInModal">
+                  Hash
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <i v-if="mind.hashed_id && mind._hashword" class="mind-btn hashed-btn">h#shed</i>
+      </div>
 
       <div class="content-box">
         <textarea
             class="caption changeable-input"
             v-model="mind.caption"
+            :disabled="!canEditMindFields"
             @focusout="handleFocusOut_caption"></textarea>
       </div>
     </div>
@@ -36,8 +129,14 @@
 
 <script>
 import {mapState} from "vuex";
+import dataHasher from "@/helpers/dataHasher.js";
 
 export default {
+  computed: {
+    ...mapState({
+      mindsMap: state => state.mind.mindsMap
+    }),
+  },
   props: {
     mind: {
       type: Object,
@@ -49,6 +148,12 @@ export default {
       open: false,
       old_caption: this.mind.caption,
       old_topic: this.mind.topic,
+      model_open_enter_hashword: false,
+      model_set_hashword: false,
+      loadForHashOnHashingModal: false,
+      canEditMindFields: true,
+      canEditMindTopic: true,
+      hashedParentMind: null,
     }
   },
   methods: {
@@ -108,8 +213,73 @@ export default {
       this.mind.access = access
       this.updateMind({access})
     },
+    clickOnHashInModal(e) {
+      this.loadForHashOnHashingModal = true
+      const caption = dataHasher.hash(this.mind._hashword, this.mind.caption)
+
+      this.updateMind({caption, hashed_id: this.mind.id})
+          .then(() => {
+            this.model_open_enter_hashword = false
+            this.mind.hashed_id = this.mind.id
+          })
+          .catch((err) => {
+            alert(err)
+          })
+          .finally(() => {
+            this.loadForHashOnHashingModal = false
+          })
+    },
+    clickOnSetHashWordInModal(e) {
+      // todo
+      try {
+        let a
+        if (this.mind.id === this.mind.hashed_id)
+          a=dataHasher.unhash(this.mind._hashword,this.mind.caption)
+        else
+          a=dataHasher.unhash(this.mind._hashword,this.mind.title)
+
+        console.log(a)
+        console.log(this.mind._hashword)
+        console.log(this.mind.caption)
+        this.unhashingData()
+      } catch (err) {
+        alert(err)
+        this.mind._hashword = ''
+      }
+    },
+    checkingHashWord() {
+      if (this.mind.hashed_id) {
+        let hashedMind = this.mindsMap.get(this.mind.hashed_id)
+        if (hashedMind && hashedMind._hashword) {
+          this.mind._hashword = hashedMind._hashword
+        } else {
+          this.canEditMindFields = false
+          this.canEditMindTopic = false
+          if (this.mind.hashed_id === this.mind.id) {
+            this.canEditMindTopic = true
+          }
+        }
+      }
+    },
+    unhashingData() {
+      if (this.mind.hashed_id) {
+        let hashedMind = this.mindsMap.get(this.mind.hashed_id)
+        if (hashedMind && hashedMind._hashword) {
+          this.mind._hashword = hashedMind._hashword
+        } else {
+          this.canEditMindFields = false
+          this.canEditMindTopic = false
+          if (this.mind.hashed_id === this.mind.id) {
+            this.canEditMindTopic = true
+          }
+        }
+      }
+    },
   },
   mounted() {
+
+    this.checkingHashWord()
+
   },
 }
 </script>
@@ -197,6 +367,26 @@ export default {
   color: rgb(33, 37, 41);
   cursor: default;
 }
+
+.set-hashword-btn {
+  font-weight: bold;
+  font-size: large;
+}
+
+/*.modal_enter_hashword {*/
+/*  display: flex; !* Hidden by default *!*/
+/*  position: fixed; !* Stay in place *!*/
+/*  z-index: 1; !* Sit on top *!*/
+/*  padding-top: 100px; !* Location of the box *!*/
+/*  left: 0;*/
+/*  top: 0;*/
+/*  width: 100vw; !* Full width *!*/
+/*  height: 100vh; !* Full height *!*/
+/*  overflow: auto; !* Enable scroll if needed *!*/
+/*  background-color: rgba(0, 0, 0, 0.5); !* Black w/ opacity *!*/
+/*  justify-content: center;*/
+/*  align-items: center;
+}*/
 
 
 </style>

@@ -29,7 +29,6 @@ export default {
     ...mapState({
       mindsMap: state => state.mind.mindsMap
     }),
-
   },
   methods: {},
   mounted() {
