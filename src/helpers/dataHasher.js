@@ -27,6 +27,5 @@ function test() {
     }
 }
 
-dataHasher.hash(key, plaintext)
 
 export default dataHasher

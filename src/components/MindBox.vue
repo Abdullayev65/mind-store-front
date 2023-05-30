@@ -122,6 +122,11 @@
             :disabled="!canEditMindFields"
             @focusout="handleFocusOut_caption"></textarea>
       </div>
+
+      <div class="files-container">
+        <MindFileList :mind="this.mind" />
+      </div>
+
     </div>
   </div>
 
@@ -130,8 +135,10 @@
 <script>
 import {mapState} from "vuex";
 import dataHasher from "@/helpers/dataHasher.js";
+import MindFileList from "@/components/MindFileList.vue";
 
 export default {
+  components: {MindFileList},
   computed: {
     ...mapState({
       mindsMap: state => state.mind.mindsMap
@@ -153,7 +160,6 @@ export default {
       loadForHashOnHashingModal: false,
       canEditMindFields: true,
       canEditMindTopic: true,
-      hashedParentMind: null,
     }
   },
   methods: {
@@ -186,17 +192,27 @@ export default {
           })
     },
     handleFocusOut_caption(focusEvent) {
-      if (this.old_caption === this.mind.caption)
+      let caption = this.mind.caption
+
+      if (this.old_caption === caption)
         return
-      this.updateMind({caption: this.mind.caption})
+      if (this.mind._hashword)
+        caption = dataHasher.hash(this.mind._hashword, caption)
+
+      this.updateMind({caption})
           .then(() => {
             this.old_caption = this.mind.caption;
           })
     },
     handleFocusOut_topic(focusEvent) {
-      if (this.old_topic === this.mind.topic)
+      let topic = this.mind.topic
+
+      if (this.old_topic === topic)
         return
-      this.updateMind({topic: this.mind.topic})
+      if (this.mind._hashword && this.mind.hashed_id!==this.mind.id)
+        topic = dataHasher.hash(this.mind._hashword, topic)
+
+      this.updateMind({topic})
           .then(() => {
             this.old_topic = this.mind.topic
           })
@@ -215,12 +231,14 @@ export default {
     },
     clickOnHashInModal(e) {
       this.loadForHashOnHashingModal = true
+      this.mind.caption = this.mind.caption ? this.mind.caption : ' '
       const caption = dataHasher.hash(this.mind._hashword, this.mind.caption)
 
       this.updateMind({caption, hashed_id: this.mind.id})
           .then(() => {
             this.model_open_enter_hashword = false
             this.mind.hashed_id = this.mind.id
+            this.mind._can_hash = false
           })
           .catch((err) => {
             alert(err)
@@ -230,22 +248,22 @@ export default {
           })
     },
     clickOnSetHashWordInModal(e) {
-      // todo
-      try {
-        let a
-        if (this.mind.id === this.mind.hashed_id)
-          a=dataHasher.unhash(this.mind._hashword,this.mind.caption)
-        else
-          a=dataHasher.unhash(this.mind._hashword,this.mind.title)
 
-        console.log(a)
-        console.log(this.mind._hashword)
-        console.log(this.mind.caption)
-        this.unhashingData()
-      } catch (err) {
-        alert(err)
-        this.mind._hashword = ''
+      let a
+      if (this.mind.id === this.mind.hashed_id)
+        a = dataHasher.unhash(this.mind._hashword, this.mind.caption)
+      else
+        a = dataHasher.unhash(this.mind._hashword, this.mind.title)
+
+      if (!a) {
+        alert("hashword gone wrong!")
+        return
       }
+
+      this.unhashingData()
+      this.model_set_hashword = false
+      this.canEditMindFields = true
+      this.canEditMindTopic = true
     },
     checkingHashWord() {
       if (this.mind.hashed_id) {
@@ -262,19 +280,32 @@ export default {
       }
     },
     unhashingData() {
-      if (this.mind.hashed_id) {
+      if (!this.mind.hashed_id)
+        return
+      if (this.mind._hashword) {
         let hashedMind = this.mindsMap.get(this.mind.hashed_id)
-        if (hashedMind && hashedMind._hashword) {
+        if (hashedMind && hashedMind._hashword)
           this.mind._hashword = hashedMind._hashword
-        } else {
-          this.canEditMindFields = false
-          this.canEditMindTopic = false
-          if (this.mind.hashed_id === this.mind.id) {
-            this.canEditMindTopic = true
-          }
-        }
       }
+
+      const hashword = this.mind._hashword
+      if (hashword) {
+        this.mind.caption = dataHasher.unhash(hashword, this.mind.caption)
+        if (this.mind.hashed_id !== this.mind.id)
+          this.mind.topic = dataHasher.unhash(hashword, this.mind.topic)
+
+        this.savingFieldsAsOld()
+      } else {
+        this.canEditMindFields = false
+        this.canEditMindTopic = false
+
+      }
+
     },
+    savingFieldsAsOld() {
+      this.old_caption = this.mind.caption
+      this.old_topic = this.mind.topic
+    }
   },
   mounted() {
 

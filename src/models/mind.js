@@ -63,6 +63,20 @@ const mutations = {
     updateByIdFail(state, err) {
         alert(err)
     },
+    addFilesStart(state) {
+        // state.isLoading = true
+        // state.err = null
+        // state.isLoggedIn = false
+    },
+    addFilesSuccess(state, updatedMind) {
+        const mind = state.mindsMap.get(updatedMind.id)
+        Object.values((name, field) => {
+            mind[name] = field
+        })
+    },
+    addFilesFail(state, err) {
+        alert(err)
+    },
 }
 
 const actions = {
@@ -124,6 +138,26 @@ const actions = {
                 })
                 .catch((err) => {
                     ctx.commit('updateByIdFail')
+                    console.log(`err:`, err)
+                })
+        })
+    },
+    addFiles(ctx, data) {
+        return new Promise((resolve, reject) => {
+            ctx.commit('addFilesStart')
+
+            MindService.addFiles(data)
+                .then((res) => {
+                    if (res.data['status']) {
+                        ctx.commit('addFilesSuccess', res.data['res'])
+                        resolve(res.data['res'])
+                    } else {
+                        ctx.commit('addFilesFail', res.data['msg'])
+                        reject(res.data['msg'])
+                    }
+                })
+                .catch((err) => {
+                    ctx.commit('addFilesFail')
                     console.log(`err:`, err)
                 })
         })
