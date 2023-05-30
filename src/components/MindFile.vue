@@ -35,6 +35,9 @@
 
 <script>
 
+import {mapState} from "vuex";
+import dataHasher from "@/helpers/dataHasher";
+
 export default {
   props: {
     file: {
@@ -46,6 +49,7 @@ export default {
     return {
       isImage: 1,
       _file_data: null,
+      hashed_mind: null,
       preview: null,
     }
   },
@@ -56,48 +60,55 @@ export default {
             alert(err)
           })
           .then((res) => {
-
-            var file = new File([res.data], this.file.name);
-            console.log("file...")
-            console.log(file)
-
-            var reader = new FileReader();
-            reader.onload = (e) => {
-              this.preview = e.target.result;
-            }
-            this.image= file;
-            reader.readAsDataURL(file);
-
-            // document.getElementById("file_" + this.file.id).src = objectURL;
-
-
-            // console.log("getFileById________res")
-            // console.log(res)
-            // console.log(typeof res)
-            //
-            // var blob = new Blob([file], {type: res['content-type']});
-            // var file = new File([blob], this.file.name, blob);
-            //
-            // console.log(file)
-            //
-            // // document.getElementById("file_" + this.file.id).src = URL.createObjectURL(file);
-            //
-            // this.url = URL.createObjectURL(file);
-            // console.log('URL.createObjectURL(file)')
-            // console.log(URL.createObjectURL(file))
-            //
-            // this.setFileDataToSrc()
+            this.file._file_data = new File([res.data], this.file.name);
+            this.fileReader()
           })
     },
-    setFileDataToSrc() {
+    fileReader() {
+      var reader = new FileReader();
+      reader.onload = (e) => {
+        this.preview = e.target.result;
+      }
 
-    }
+      reader.readAsDataURL(this.file._file_data);
+    },
+    checkHashedMind() {
+      const hashed_mind = this.mindsMap.get(this.file.hashed_id)
+      if (this.hashed_mind !== hashed_mind)
+        this.hashed_mind = hashed_mind
+
+      if (!this.hashed_mind._hashword)
+        return
+
+      this.file._file_data = dataHasher
+          .unhash(this.hashed_mind._hashword, this.file._file_data)
+      this.file._state_hashed = false
+    },
+    gotHashword() {
+      this.checkHashedMind()
+    },
   },
   mounted() {
     this.getFile()
-    //
-    // console.log("mounted this.file._file_data")
-    // console.log(this.file._file_data)
+
+    if (this.file.hashed_id) {
+      this.file._state_hashed = true
+      this.$store.dispatch('mustBeMindInId', this.file.hashed_id)
+          .cache(() => {
+          })
+          .then(() => {
+            this.checkHashedMind()
+            if (this.file._state_hashed) {
+              this.hashed_mind._got_hashword_funcs.push(this.gotHashword)
+            }
+          })
+    }
+
+  },
+  computed: {
+    ...mapState({
+      mindsMap: state => state.mind.mindsMap
+    }),
   },
 }
 </script>

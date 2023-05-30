@@ -36,6 +36,22 @@ const mutations = {
         // state.err = err
         // state.isLoggedIn = false
     },
+    mustBeMindInIdStart(state) {
+        // state.isLoading = true
+        // state.err = null
+        // state.isLoggedIn = false
+    },
+    mustBeMindInIdSuccess(state, mind) {
+        state.mindsMap.set(mind.id, mind)
+        if (mind.sub_minds) {
+            for (const subMind in mind.sub_minds) {
+                this.mustBeMindInIdSuccess(state, subMind)
+            }
+        }
+    },
+    mustBeMindInIdFail(state, {err, id}) {
+        state.mindsMap.set(id, {id, _fake_data: true})
+    },
     getByIdStart(state) {
         // state.isLoading = true
         // state.err = null
@@ -43,6 +59,12 @@ const mutations = {
     },
     getByIdSuccess(state, mind) {
         state.mindsMap.set(mind.id, mind)
+        if (mind.sub_minds) {
+            console.log(mind.sub_minds)
+            for (var subMindIndx in mind.sub_minds) {
+                mutations.getByIdSuccess(state, mind.sub_minds[subMindIndx])
+            }
+        }
     },
     getByIdFail(state, err) {
         // state.isLoading = false
@@ -158,6 +180,36 @@ const actions = {
                 })
                 .catch((err) => {
                     ctx.commit('addFilesFail')
+                    console.log(`err:`, err)
+                })
+        })
+    },
+    mustBeMindInId(ctx, id) {
+        if (id == null)
+            return new Promise();
+
+        if (state.mindsMap.get(id)) {
+            const mind = state.mindsMap.get(id)
+
+            return new Promise();
+        }
+
+        return new Promise((resolve, reject) => {
+            ctx.commit('mustBeMindInIdStart')
+
+            MindService.getById(id)
+                .then((res) => {
+                    if (res.data['status']) {
+                        const mind = res.data['res']
+                        ctx.commit('mustBeMindInIdSuccess', mind)
+                        resolve(mind)
+                    } else {
+                        ctx.commit('mustBeMindInIdFail', {id, err: res.data['msg']})
+                        reject(res.data['msg'])
+                    }
+                })
+                .catch((err) => {
+                    ctx.commit('mustBeMindInIdFail', {err, id})
                     console.log(`err:`, err)
                 })
         })

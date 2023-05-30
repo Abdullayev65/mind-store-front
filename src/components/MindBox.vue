@@ -52,7 +52,7 @@
                 <button type="button"
                         class="btn btn-secondary"
                         data-dismiss="modal"
-                        @click="model_open_enter_hashword=false">Close
+                        @click="modelEnterHashwordCancel">Close
                 </button>
                 <button type="button"
                         class="btn btn-primary"
@@ -98,7 +98,7 @@
                 <button type="button"
                         class="btn btn-secondary"
                         data-dismiss="modal"
-                        @click="model_set_hashword=false">Close
+                        @click="modelSetHashwordCancel">Close
                 </button>
                 <button type="button"
                         class="btn btn-primary"
@@ -264,6 +264,13 @@ export default {
       this.model_set_hashword = false
       this.canEditMindFields = true
       this.canEditMindTopic = true
+      this.callGotFuncs()
+    },
+    callGotFuncs() {
+      console.log(this.mind)
+      for (let func in this.mind._got_hashword_funcs) {
+        func()
+      }
     },
     checkingHashWord() {
       if (this.mind.hashed_id) {
@@ -305,7 +312,17 @@ export default {
     savingFieldsAsOld() {
       this.old_caption = this.mind.caption
       this.old_topic = this.mind.topic
-    }
+    },
+    modelEnterHashwordCancel() {
+      this.model_open_enter_hashword=false
+      setTimeout(()=>{
+        this.mind._hashword = ''
+      },50)
+    },
+    modelSetHashwordCancel() {
+      this.model_set_hashword=false
+      this.mind._hashword = ''
+    },
   },
   mounted() {
 
