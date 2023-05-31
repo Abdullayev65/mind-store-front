@@ -268,9 +268,9 @@ export default {
     },
     callGotFuncs() {
       console.log(this.mind)
-      for (let func in this.mind._got_hashword_funcs) {
-        func()
-      }
+      // for (let func in this.mind._got_hashword_funcs) {
+      //   func()
+      // }
     },
     checkingHashWord() {
       if (this.mind.hashed_id) {

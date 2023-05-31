@@ -36,11 +36,6 @@ export default {
       required: true
     }
   },
-  computed: {
-    ...mapState({
-      mindsMap: state => state.mind.mindsMap
-    }),
-  },
   methods: {
     onUploadFile(e) {
       console.log('e.target_________________')
@@ -60,14 +55,7 @@ export default {
         this.canAddNewFile = true
     },
     initComponent() {
-      if (this.mind.hashed_id) {
-        this.$store.dispatch('mustBeMindInId', this.mind.hashed_id)
-            .then(() => {
-              const hashed_mind = this.mindsMap.get(this.mind.hashed_id)
-              if (!hashed_mind._hashword)
-                hashed_mind._got_hashword_funcs.push(this.gotHashword)
-            })
-      }
+
     },
     gotHashword() {
       this.canAddNewFile = true

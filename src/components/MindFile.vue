@@ -73,16 +73,16 @@ export default {
       reader.readAsDataURL(this.file._file_data);
     },
     checkHashedMind() {
-      const hashed_mind = this.mindsMap.get(this.file.hashed_id)
-      if (this.hashed_mind !== hashed_mind)
-        this.hashed_mind = hashed_mind
-
-      if (!this.hashed_mind._hashword)
-        return
-
-      this.file._file_data = dataHasher
-          .unhash(this.hashed_mind._hashword, this.file._file_data)
-      this.file._state_hashed = false
+      // const hashed_mind = this.mindsMap.get(this.file.hashed_id)
+      // if (this.hashed_mind !== hashed_mind)
+      //   this.hashed_mind = hashed_mind
+      //
+      // if (!this.hashed_mind._hashword)
+      //   return
+      //
+      // this.file._file_data = dataHasher
+      //     .unhash(this.hashed_mind._hashword, this.file._file_data)
+      // this.file._state_hashed = false
     },
     gotHashword() {
       this.checkHashedMind()
@@ -98,17 +98,9 @@ export default {
           })
           .then(() => {
             this.checkHashedMind()
-            if (this.file._state_hashed) {
-              this.hashed_mind._got_hashword_funcs.push(this.gotHashword)
-            }
           })
     }
 
-  },
-  computed: {
-    ...mapState({
-      mindsMap: state => state.mind.mindsMap
-    }),
   },
 }
 </script>
