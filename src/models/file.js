@@ -18,6 +18,13 @@ const mutations = {
     },
     getFileByIdFail(state, err) {
     },
+    deleteFileFromMindStart(state) {
+    },
+    deleteFileFromMindSuccess(state, {id, f}) {
+    },
+    deleteFileFromMindFail(state, err) {
+    },
+
 }
 
 const actions = {
@@ -33,6 +40,25 @@ const actions = {
                 })
                 .catch((err) => {
                     ctx.commit('getFileByIdFail')
+                    console.log(`err:`, err)
+                    reject(err)
+                })
+        })
+    },
+    deleteFileFromMind(ctx, data) {
+        return new Promise((resolve, reject) => {
+            ctx.commit('deleteFileFromMindStart')
+
+            FileService.deleteFileFromMind(data)
+                .then((res) => {
+
+                    if (!res.data['status'])
+                        throw res['msg']
+                    ctx.commit('deleteFileFromMindSuccess', res.data)
+                    resolve(res.data)
+                })
+                .catch((err) => {
+                    ctx.commit('deleteFileFromMindFail')
                     console.log(`err:`, err)
                     reject(err)
                 })

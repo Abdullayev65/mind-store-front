@@ -1,7 +1,7 @@
 <template>
 
 
-  <div class="drive-item module text-center">
+  <div class="drive-item module text-center" :style="display_none?'display:none':''">
     <div class="drive-item-inner module-inner">
       <div class="drive-item-title"><a href="#">
         {{ file.name }}
@@ -9,12 +9,11 @@
       <div class="drive-item-thumb"><a href="#">
 
 
-        <img v-if="isImage" class="file-img img-thumbnail"
+        <img v-if="file_type==='img'" class="file-img img-thumbnail"
              :src="preview"
-             id="image13"
              :alt="file.url">
-
-        <i v-else class="fa fa-file-text-o text-primary"></i>
+        <!--        <i class="fa-solid fa-file"></i>-->
+        <i v-else class="fa-solid fa-file fa-2xl file-icon"></i>
 
 
       </a></div>
@@ -22,9 +21,10 @@
     </div>
     <div class="drive-item-footer module-footer">
       <ul class="utilities d-flex justify-content-around">
-        <span><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Download"><i
+        <span class="file-btns"><a data-toggle="tooltip" data-placement="top" title="" data-original-title="Download"><i
             class="fa fa-download"></i></a></span>
-        <span><a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"><i
+        <span @click="clickOnDelete" class="delete-file file-btns"><a data-toggle="tooltip" data-placement="top"
+                                                                      title="" data-original-title="Delete"><i
             class="fa fa-trash"></i></a></span>
       </ul>
     </div>
@@ -35,22 +35,27 @@
 
 <script>
 
-import {mapState} from "vuex";
-import dataHasher from "@/helpers/dataHasher";
-
 export default {
   props: {
     file: {
       type: Object,
       required: true
-    }
+    },
+    mind: {
+      type: Object,
+      required: true
+    },
+    got_hashword: {
+      type: Object,
+      required: true
+    },
   },
   data() {
     return {
-      isImage: 1,
-      _file_data: null,
       hashed_mind: null,
       preview: null,
+      file_type: '', // 'img', other
+      display_none: false,
     }
   },
   methods: {
@@ -72,35 +77,72 @@ export default {
 
       reader.readAsDataURL(this.file._file_data);
     },
-    checkHashedMind() {
-      // const hashed_mind = this.mindsMap.get(this.file.hashed_id)
-      // if (this.hashed_mind !== hashed_mind)
-      //   this.hashed_mind = hashed_mind
-      //
-      // if (!this.hashed_mind._hashword)
-      //   return
-      //
-      // this.file._file_data = dataHasher
-      //     .unhash(this.hashed_mind._hashword, this.file._file_data)
-      // this.file._state_hashed = false
+    convertWordArrayToUint8Array(wordArray) {
+      // buni stackoverflow dan olganman
+      var arrayOfWords = wordArray.hasOwnProperty("words") ? wordArray.words : [];
+      var length = wordArray.hasOwnProperty("sigBytes") ? wordArray.sigBytes : arrayOfWords.length * 4;
+      var uInt8Array = new Uint8Array(length), index = 0, word, i;
+      for (i = 0; i < length; i++) {
+        word = arrayOfWords[i];
+        uInt8Array[index++] = word >> 24;
+        uInt8Array[index++] = (word >> 16) & 0xff;
+        uInt8Array[index++] = (word >> 8) & 0xff;
+        uInt8Array[index++] = word & 0xff;
+      }
+      return uInt8Array;
     },
-    gotHashword() {
-      this.checkHashedMind()
+    autoSetFileType() {
+      var types = ['jpg', 'gif', 'bmp', 'png',]
+      for (let type of types) {
+        if (this.file.name.endsWith(type)) {
+          this.file_type = 'img'
+        }
+      }
+    },
+    clickOnDelete() {
+
+      const data = {
+        file_id: this.file.id,
+        mind_id: this.mind.id,
+      }
+
+      this.$store.dispatch('deleteFileFromMind', data)
+          .catch((err) => {
+            alert(err)
+          })
+          .then((res) => {
+            this.display_none = true
+          })
     },
   },
   mounted() {
     this.getFile()
 
+    this.autoSetFileType()
     if (this.file.hashed_id) {
       this.file._state_hashed = true
-      this.$store.dispatch('mustBeMindInId', this.file.hashed_id)
-          .cache(() => {
-          })
-          .then(() => {
-            this.checkHashedMind()
-          })
     }
 
+  },
+  watch: {
+    got_hashword() {
+      var file = this.file._file_data;
+      var reader = new FileReader();
+      reader.onload = () => {
+        var key = this.mind._hashword;
+
+        var decrypted = CryptoJS.AES.decrypt(reader.result, key);               // Decryption: I: Base64 encoded string (OpenSSL-format) -> O: WordArray
+        var typedArray = this.convertWordArrayToUint8Array(decrypted);               // Convert: WordArray -> typed array
+
+        var fileDec = new Blob([typedArray]);                                   // Create blob from typed array
+
+        var file = new File([fileDec], this.file.name, {type: this.file._file_data.type});
+        this.file._file_data = file
+
+        this.fileReader()
+      };
+      reader.readAsText(file);
+    }
   },
 }
 </script>
@@ -176,6 +218,25 @@ export default {
 
 .drive-item-footer .utilities li:last-child {
   padding-right: 0
+}
+
+.file-icon {
+  padding: 1.1em;
+  border-radius: .3em;
+}
+
+.file-icon:hover {
+  background-color: lightslategrey;
+  color: blue;
+}
+
+.file-btns {
+  padding: 0.36em;
+  border-radius: 0.2em;
+}
+
+.delete-file:hover {
+  background-color: black;
 }
 
 /*

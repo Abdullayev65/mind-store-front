@@ -8,6 +8,9 @@ const FileService = {
             responseType: 'blob',
         });
     },
+    deleteFileFromMind(data) {
+        return axios.delete(`mind/delete-file/${data.mind_id}/${data.file_id}`)
+    },
 
 }
 

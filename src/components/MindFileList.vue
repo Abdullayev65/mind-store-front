@@ -3,7 +3,12 @@
   <div class="drive-wrapper drive-grid-view">
     <div class="grid-items-wrapper">
 
-      <MindFile v-if="mind.files" v-for="file in mind.files" :file="file"/>
+      <MindFile
+          v-if="mind.files"
+          v-for="file in mind.files"
+          :file="file"
+          :mind="mind"
+          :got_hashword="got_hashword" />
 
       <div :style="canAddNewFile?'':'display: none'">
         <label for="add-file" class="add-file">
@@ -19,9 +24,7 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
 import MindFile from "@/components/MindFile.vue";
-import {createElementBlock} from "vue";
 
 export default {
   components: {MindFile},
@@ -34,16 +37,49 @@ export default {
     mind: {
       type: Object,
       required: true
-    }
+    },
+    got_hashword: {
+      type: Object,
+      required: true
+    },
   },
   methods: {
     onUploadFile(e) {
-      console.log('e.target_________________')
-      console.log(e.target.files[0])
 
-      this.$store.dispatch('addFiles', {files: e.target.files, mind_id: this.mind.id})
+      let files = e.target.files
+
+      for (let i = 0; i < files.length; i++) {
+        if (this.mind.hashed_id) {
+          let hashedfiles = []
+
+          var reader = new FileReader();
+          reader.onload = () => {
+            var key = this.mind._hashword;
+            var wordArray = CryptoJS.lib.WordArray.create(reader.result);           // Convert: ArrayBuffer -> WordArray
+            var encrypted = CryptoJS.AES.encrypt(wordArray, key).toString();        // Encryption: I: WordArray -> O: -> Base64 encoded string (OpenSSL-format)
+
+            var fileEnc = new Blob([encrypted]);                                    // Create blob from string
+
+            var file = new File([fileEnc], files[i].name, {type: files[i].type});
+            hashedfiles = [file]
+            this.addFilesToServer({
+              files: hashedfiles,
+              mind_id: this.mind.id,
+              access: this.mind.access,
+              hashed_id: this.mind.hashed_id
+            })
+          };
+          reader.readAsArrayBuffer(files[i]);
+        } else {
+          this.addFilesToServer({files: e.target.files, mind_id: this.mind.id})
+        }
+      }
+
+
+    },
+    addFilesToServer(data) {
+      return this.$store.dispatch('addFiles', data)
           .then((newFile) => {
-
             this.mind.files.push(newFile)
           })
           .catch((err) => {
@@ -67,7 +103,12 @@ export default {
 
     this.checkCanAddNewFile()
     this.initComponent()
-  }
+  },
+  watch: {
+    got_hashword() {
+      this.canAddNewFile = true
+    }
+  },
 }
 </script>
 

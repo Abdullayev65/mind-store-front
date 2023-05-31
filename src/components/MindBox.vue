@@ -18,7 +18,9 @@
            :class="mind.access==99?'fa-users':'fa-user'"
            @click="clickOnAccess">
         </i>
-        <i v-if="mind._can_hash"
+
+
+        <i v-if="!mind.hashed_id"
            @click="model_open_enter_hashword=true"
            class="mind-btn hashing-btn">
           h#shing</i>
@@ -66,11 +68,10 @@
         </div>
 
 
-        <i v-if="mind.hashed_id && !mind._hashword"
+        <i v-else-if="mind.hashed_id && !mind._hashword"
            @click="model_set_hashword=true"
            class="mind-btn set-hashword-btn">
           set_h#shword</i>
-
         <div v-if="model_set_hashword"
              style="display: block"
              class="modal">
@@ -124,7 +125,7 @@
       </div>
 
       <div class="files-container">
-        <MindFileList :mind="this.mind" />
+        <MindFileList :mind="this.mind" @gotHashword="gotHashwordEvent" :got_hashword="got_hashword" />
       </div>
 
     </div>
@@ -160,6 +161,7 @@ export default {
       loadForHashOnHashingModal: false,
       canEditMindFields: true,
       canEditMindTopic: true,
+      got_hashword: false,
     }
   },
   methods: {
@@ -264,13 +266,7 @@ export default {
       this.model_set_hashword = false
       this.canEditMindFields = true
       this.canEditMindTopic = true
-      this.callGotFuncs()
-    },
-    callGotFuncs() {
-      console.log(this.mind)
-      // for (let func in this.mind._got_hashword_funcs) {
-      //   func()
-      // }
+      this.got_hashword = true
     },
     checkingHashWord() {
       if (this.mind.hashed_id) {
@@ -320,6 +316,10 @@ export default {
       },50)
     },
     modelSetHashwordCancel() {
+      this.model_set_hashword=false
+      this.mind._hashword = ''
+    },
+    gotHashwordEvent() {
       this.model_set_hashword=false
       this.mind._hashword = ''
     },

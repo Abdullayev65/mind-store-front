@@ -19,6 +19,10 @@ const MindService = {
         }
 
         bodyFormData.append('mind_id', data.mind_id);
+        if (data.hashed_id)
+            bodyFormData.append('hashed_id', data.hashed_id);
+        if (data.access)
+            bodyFormData.append('access', data.access);
 
 
         return axios({
