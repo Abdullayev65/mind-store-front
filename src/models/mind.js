@@ -1,5 +1,4 @@
 import MindService from "@/serveice/mind.js";
-import localStore from "@/helpers/persistaneStorage";
 
 const state = {
     isLoading: false,

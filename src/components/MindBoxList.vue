@@ -2,7 +2,7 @@
 
   <h2 v-if="!subMindsLoaded">Loading...</h2>
   <div v-else>
-    <MindBox v-for="mind in currentMind['sub_minds']" :mind="mind" />
+    <MindBox v-for="mind in currentMind['sub_minds']" :mind="mind"/>
   </div>
 
 </template>

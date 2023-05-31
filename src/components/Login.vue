@@ -5,10 +5,10 @@
       <img class="mb-4" :src="logo" alt="" width="100">
       <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
-      <ValidationErr v-if="validationErrs" :validationErrs="validationErrs" />
+      <ValidationErr v-if="validationErrs" :validationErrs="validationErrs"/>
 
-      <Input :label="'Email or Username'" :type="'text'" v-model="identifier" />
-      <Input :label="'Password'" :type="'password'" v-model="password" />
+      <Input :label="'Email or Username'" :type="'text'" v-model="identifier"/>
+      <Input :label="'Password'" :type="'password'" v-model="password"/>
 
       <Button type="submit" @click="onSubmit">Login</Button>
     </form>

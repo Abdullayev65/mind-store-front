@@ -125,7 +125,7 @@
       </div>
 
       <div class="files-container">
-        <MindFileList :mind="this.mind" @gotHashword="gotHashwordEvent" :got_hashword="got_hashword" />
+        <MindFileList :mind="this.mind" @gotHashword="gotHashwordEvent" :got_hashword="got_hashword"/>
       </div>
 
     </div>
@@ -211,7 +211,7 @@ export default {
 
       if (this.old_topic === topic)
         return
-      if (this.mind._hashword && this.mind.hashed_id!==this.mind.id)
+      if (this.mind._hashword && this.mind.hashed_id !== this.mind.id)
         topic = dataHasher.hash(this.mind._hashword, topic)
 
       this.updateMind({topic})
@@ -310,17 +310,17 @@ export default {
       this.old_topic = this.mind.topic
     },
     modelEnterHashwordCancel() {
-      this.model_open_enter_hashword=false
-      setTimeout(()=>{
+      this.model_open_enter_hashword = false
+      setTimeout(() => {
         this.mind._hashword = ''
-      },50)
+      }, 50)
     },
     modelSetHashwordCancel() {
-      this.model_set_hashword=false
+      this.model_set_hashword = false
       this.mind._hashword = ''
     },
     gotHashwordEvent() {
-      this.model_set_hashword=false
+      this.model_set_hashword = false
       this.mind._hashword = ''
     },
   },

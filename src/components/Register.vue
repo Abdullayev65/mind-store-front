@@ -5,7 +5,7 @@
       <img class="mb-4" :src="logo" alt="" width="100">
       <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
-      <ValidationErr v-if="validationErrs" :validationErrs="validationErrs" />
+      <ValidationErr v-if="validationErrs" :validationErrs="validationErrs"/>
       <Input :label="'Name'" :type="'text'" v-model="name"/>
       <Input :label="'Email address'" :type="'email'" v-model="email"/>
       <Input :label="'Password'" :type="'password'" v-model="password"/>

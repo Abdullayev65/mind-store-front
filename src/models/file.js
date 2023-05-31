@@ -1,5 +1,4 @@
 import FileService from "@/serveice/file.js";
-import localStore from "@/helpers/persistaneStorage";
 
 const state = {
     isLoading: false,
@@ -35,7 +34,7 @@ const actions = {
             FileService.getById(id)
                 .then((res) => {
 
-                    ctx.commit('getFileByIdSuccess', {id:id, f:res})
+                    ctx.commit('getFileByIdSuccess', {id: id, f: res})
                     resolve(res)
                 })
                 .catch((err) => {

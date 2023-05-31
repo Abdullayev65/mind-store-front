@@ -8,7 +8,7 @@
           v-for="file in mind.files"
           :file="file"
           :mind="mind"
-          :got_hashword="got_hashword" />
+          :got_hashword="got_hashword"/>
 
       <div :style="canAddNewFile?'':'display: none'">
         <label for="add-file" class="add-file">

@@ -1,7 +1,7 @@
 <template>
-  <ul class="list-group" >
+  <ul class="list-group">
     <li v-for="errMsg in errMsgs" :key="errMsg" class="list-group-item list-group-item-danger">
-      {{errMsg}}
+      {{ errMsg }}
     </li>
   </ul>
 </template>

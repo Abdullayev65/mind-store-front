@@ -1,6 +1,6 @@
 <template>
-<h1 class="text-center"> Minds </h1>
-  <MindBoxList v-if="user" :parentMindId="user.mind_id" />
+  <h1 class="text-center"> Minds </h1>
+  <MindBoxList v-if="user" :parentMindId="user.mind_id"/>
 </template>
 
 <script>
@@ -12,8 +12,7 @@ import {mapGetters} from "vuex";
 export default defineComponent({
   components: {MindBoxList},
   data() {
-    return {
-    }
+    return {}
   },
   computed: {
     ...mapGetters({

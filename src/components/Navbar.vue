@@ -35,7 +35,7 @@
 <script>
 // import {mapGetters} from 'vuex'
 import {logo} from '@/constants'
-import {mapGetters, mapState} from "vuex";
+import {mapGetters} from "vuex";
 
 export default {
   data() {
