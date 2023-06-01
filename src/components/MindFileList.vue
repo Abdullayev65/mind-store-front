@@ -1,6 +1,6 @@
 <template>
 
-  <div class="drive-wrapper drive-grid-view">
+  <div v-if="canAddNewFile||(mind.files&& mind.files.length)" class="drive-wrapper drive-grid-view">
     <div class="grid-items-wrapper">
 
       <MindFile
@@ -32,6 +32,7 @@ export default {
     return {
       canAddNewFile: false,
     }
+    console.log(files)
   },
   props: {
     mind: {

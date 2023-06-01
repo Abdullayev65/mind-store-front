@@ -88,7 +88,7 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 
 .add-mind-box {
   background-color: darkslategrey;

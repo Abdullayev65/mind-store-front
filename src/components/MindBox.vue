@@ -274,7 +274,7 @@ export default {
       else
         a = dataHasher.unhash(this.mind._hashword, this.mind.title)
 
-      if (!a) {
+      if (a.err) {
         alert("hashword gone wrong!")
         return
       }
@@ -302,7 +302,7 @@ export default {
     unhashingData() {
       if (!this.mind.hashed_id)
         return
-      if (this.mind._hashword) {
+      if (!this.mind._hashword) {
         let hashedMind = this.mindsMap.get(this.mind.hashed_id)
         if (hashedMind && hashedMind._hashword)
           this.mind._hashword = hashedMind._hashword
@@ -310,9 +310,9 @@ export default {
 
       const hashword = this.mind._hashword
       if (hashword) {
-        this.mind.caption = dataHasher.unhash(hashword, this.mind.caption)
+        this.mind.caption = dataHasher.mustUnhash(hashword, this.mind.caption)
         if (this.mind.hashed_id !== this.mind.id)
-          this.mind.topic = dataHasher.unhash(hashword, this.mind.topic)
+          this.mind.topic = dataHasher.mustUnhash(hashword, this.mind.topic)
 
         this.savingFieldsAsOld()
       } else {

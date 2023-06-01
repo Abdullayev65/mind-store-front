@@ -7,11 +7,23 @@ const dataHasher = {
 
         return ciphertext
     },
-    unhash(hashword, data) {
+    unhash(hashword, data) { // {data, err}
 
-        const decrypted = CryptoJS.AES.decrypt(data, hashword).toString(CryptoJS.enc.Utf8);
+        try {
+            const decrypted = CryptoJS.AES.decrypt(data, hashword);
 
-        return decrypted
+            if (decrypted.sigBytes < 0)
+                return {err: 'hashword wrong'}
+
+            return {data: decrypted.toString(CryptoJS.enc.Utf8)}
+
+        } catch (err) {
+            return {err}
+        }
+
+    },
+    mustUnhash(hashword, data) { // string
+        return dataHasher.unhash(hashword, data).data
     },
 }
 
@@ -19,10 +31,10 @@ function test() {
     const plaintext = 'Hello, World!';
     const key = '0123456789abcdef';
 
-    if (plaintext !== dataHasher.unhash(key, dataHasher.hash(key, plaintext))) {
+    if (plaintext !== dataHasher.mustUnhash(key, dataHasher.hash(key, plaintext))) {
         throw 'hashing togri ishlamayapti'
     }
-    if ('Hello, World!' !== dataHasher.unhash(key, 'U2FsdGVkX19xzoKqwhPFWfdlqEq3u5cixu6mNMGVSmY=')) {
+    if ('Hello, World!' !== dataHasher.mustUnhash(key, 'U2FsdGVkX19xzoKqwhPFWfdlqEq3u5cixu6mNMGVSmY=')) {
         throw 'hashing togri ishlamayapti'
     }
 }
