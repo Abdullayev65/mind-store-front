@@ -1,19 +1,29 @@
 <template>
 
   <h2 v-if="!subMindsLoaded">Loading...</h2>
-  <div v-else>
-    <MindBox v-for="mind in parentMind.sub_minds" :mind="mind"/>
+  <div v-else :class="'level-' + (mindLvl%3 +1)">
+    <MindBox
+        v-for="mind in parentMind.sub_minds"
+        :parentGotHashword="this['_got_hashword_id_' + mind.hashed_id]"
+        @gotHashword="gotHashword"
+        :mind="mind">
+      <MindBoxList
+          :gotHashwordIdParent="this['_got_hashword_id_' + mind.hashed_id]"
+          :parentGotHashword="gotHashwordId"
+          :parent-mind-id="mind.id"
+          :mind-lvl="mindLvl+1"/>
+    </MindBox>
 
     <div class="add-mind-box">
 
-        <label class="filled add-mind-label">
-          <input class="add-mind-input "
-                 type="text" required
-                 v-model="newTopic"
-                 v-on:keyup.enter="makeNewTopic"
-                 @focusout="makeNewTopic">
-          <span data-label="Enter new topic"></span>
-        </label>
+      <label class="filled add-mind-label">
+        <input class="add-mind-input "
+               type="text" required
+               v-model="newTopic"
+               v-on:keyup.enter="makeNewTopic"
+               @focusout="makeNewTopic">
+        <span data-label="Enter new topic"></span>
+      </label>
 
     </div>
 
@@ -27,19 +37,31 @@ import MindBox from "@/components/MindBox.vue";
 import dataHasher from "@/helpers/dataHasher";
 
 export default {
+  name: "MindBoxList",
   components: {MindBox},
   data() {
     return {
       subMindsLoaded: false,
       parentMind: null,
       newTopic: '',
+      gotHashwordId: '',
     }
   },
   props: {
     parentMindId: {
       type: String,
       required: true
-    }
+    },
+    mindLvl: {
+      type: Number,
+      default: 0,
+    },
+    parentGotHashword: {
+      type: Boolean,
+    },
+    gotHashwordIdParent: {
+      type: Object,
+    },
   },
   computed: {
     ...mapState({
@@ -54,18 +76,20 @@ export default {
         return
 
       const newMind = {
-        topic : newTopic,
-        parent_id : this.parentMindId,
-        access : this.parentMind.access,
+        topic: newTopic,
+        parent_id: this.parentMindId,
+        access: this.parentMind.access,
       }
       if (this.parentMind.hashed_id) {
         newMind.hashed_id = this.parentMind.hashed_id
-        newMind.topic = dataHasher.hash(this.parentMind._hashword, newMind.topic)
+        newMind._hashword = this.mindsMap.get(this.parentMindId)._hashword
+        newMind.topic = dataHasher.hash(newMind._hashword, newMind.topic)
       }
 
 
       this.$store.dispatch('createMind', newMind)
           .then(() => {
+            console.log(newMind)
             this.parentMind.sub_minds.push(newMind)
           })
           .catch((err) => {
@@ -73,16 +97,34 @@ export default {
             this.newTopic = newTopic
           })
     },
+    gotHashword(hashed_id) {
+      this.set_got_hashword_id(hashed_id, hashed_id)
+    },
+    set_got_hashword_id(hashed_id, val) {
+      this['_got_hashword_id_' + hashed_id] = val
+    }
   },
   mounted() {
     this.$store.dispatch('getById', this.parentMindId)
         .then((m) => {
           this.parentMind = this.mindsMap.get(this.parentMindId)
+          if (this.parentMind.sub_minds) {
+            let sub_minds = this.parentMind.sub_minds
+            for (let idx in sub_minds) {
+              this.set_got_hashword_id(sub_minds[idx].hashed_id, false)
+            }
+          }
+
           this.subMindsLoaded = true
         })
         .catch((err) => {
           alert(err)
         })
+  },
+  watch: {
+    gotHashwordIdParent() {
+      this.set_got_hashword_id(this.gotHashwordIdParent, this.gotHashwordIdParent)
+    }
   }
 }
 </script>
@@ -99,16 +141,18 @@ export default {
 }
 
 
-.add-mind-label{
+.add-mind-label {
   position: relative;
   width: 99%;
-  > span{
+
+  > span {
     &::after,
-    &::before{
+    &::before {
       position: absolute;
       transition: 200ms ease-in-out;
     }
-    &::before{
+
+    &::before {
       content: attr(data-label);
       left: 16px;
       top: 0;
@@ -121,11 +165,12 @@ export default {
       line-height: 1;
     }
   }
-  > input{
+
+  > input {
     &:focus,
-    &:valid{
-      ~ span{
-        &::before{
+    &:valid {
+      ~ span {
+        &::before {
           font-size: 12px;
           color: yellowgreen;
         }
@@ -140,37 +185,43 @@ export default {
   height: 56px;
   padding: 20px 16px 6px;
   font-size: 16px;
+
   &:focus,
-  &:active{
+  &:active {
     outline: 0;
     border: 0;
   }
 }
 
-.filled{
-  border-bottom: 1px solid rgba(0,0,0,.42);
-  > input{
+.filled {
+  border-bottom: 1px solid rgba(0, 0, 0, .42);
+
+  > input {
     background-color: darkslategrey;
     border-radius: 4px 4px 0 0;
-    &:hover{
-      background-color: rgba(0,0,0,0.08);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.08);
     }
+
     &:focus,
-    &:valid{
-      ~ span{
-        &::before{
+    &:valid {
+      ~ span {
+        &::before {
           transform: translateY(-12px);
           font-size: 12px;
           color: yellowgreen;
         }
-        &::after{
+
+        &::after {
           width: 100%;
         }
       }
     }
   }
-  > span{
-    &::after{
+
+  > span {
+    &::after {
       content: '';
       width: 0;
       height: 1px;
@@ -182,6 +233,20 @@ export default {
       transition: 300ms;
     }
   }
+}
+
+.level-2 {
+  background-color: orange;
+  padding: .1em;
+  border-radius: 1em;
+  margin-left: .4em;
+}
+
+.level-3 {
+  background-color: mediumblue;
+  padding: .1em;
+  border-radius: 1em;
+  margin-left: .4em;
 }
 
 </style>

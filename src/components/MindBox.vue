@@ -14,7 +14,7 @@
         @focusout="handleFocusOut_topic"></textarea>
     </div>
 
-    <div v-if="open">
+    <div v-show="open">
       <div class="mind-btns">
         <i class="gg-chevron-up-o mind-btn close-btn"
            @click="clickOnClose"></i>
@@ -134,7 +134,11 @@
       </div>
 
       <div class="files-container">
-        <MindFileList :mind="this.mind" @gotHashword="gotHashwordEvent" :got_hashword="got_hashword"/>
+        <MindFileList :mind="this.mind" :got_hashword="got_hashword"/>
+      </div>
+
+      <div>
+        <slot></slot>
       </div>
 
     </div>
@@ -158,6 +162,9 @@ export default {
     mind: {
       type: Object,
       required: true,
+    },
+    parentGotHashword: {
+      type: Object,
     },
   },
   data() {
@@ -276,7 +283,7 @@ export default {
       if (this.mind.id === this.mind.hashed_id)
         a = dataHasher.unhash(this.mind._hashword, this.mind.caption)
       else
-        a = dataHasher.unhash(this.mind._hashword, this.mind.title)
+        a = dataHasher.unhash(this.mind._hashword, this.mind.topic)
 
       if (a.err) {
         alert("hashword gone wrong!")
@@ -284,6 +291,8 @@ export default {
       }
 
       this.unhashingData()
+      this.mindsMap.set(this.mind.id, this.mind)
+      this._gotHashword()
       this.model_set_hashword = false
       this.canEditMindFields = true
       this.canEditMindTopic = true
@@ -294,6 +303,7 @@ export default {
         let hashedMind = this.mindsMap.get(this.mind.hashed_id)
         if (hashedMind && hashedMind._hashword) {
           this.mind._hashword = hashedMind._hashword
+          this.unhashingData()
         } else {
           this.canEditMindFields = false
           this.canEditMindTopic = false
@@ -340,9 +350,8 @@ export default {
       this.model_set_hashword = false
       this.mind._hashword = ''
     },
-    gotHashwordEvent() {
-      this.model_set_hashword = false
-      this.mind._hashword = ''
+    _gotHashword() {
+      this.$emit('gotHashword', this.mind.hashed_id)
     },
   },
   mounted() {
@@ -352,6 +361,15 @@ export default {
 
     this.checkingHashWord()
 
+  },
+  watch: {
+    parentGotHashword() {
+      this.unhashingData()
+      this.model_set_hashword = false
+      this.canEditMindFields = true
+      this.canEditMindTopic = true
+      this.got_hashword = true
+    }
   },
 }
 </script>
