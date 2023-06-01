@@ -52,6 +52,8 @@
                          placeholder="h#shword..."
                          style="border-radius: 0.7rem"
                          :disabled="loadForHashOnHashingModal"
+                         v-on:keyup.enter="clickOnHashInModal"
+                         autofocus
                          v-model="mind._hashword">
                 </div>
               </div>
@@ -97,6 +99,8 @@
                          class="form-control"
                          placeholder="h#shword..."
                          style="border-radius: 0.7rem"
+                         v-on:keyup.enter="clickOnSetHashWordInModal"
+                         autofocus
                          v-model="mind._hashword">
                 </div>
               </div>
