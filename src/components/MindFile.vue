@@ -92,7 +92,7 @@ export default {
       return uInt8Array;
     },
     autoSetFileType() {
-      var types = ['jpg', 'gif', 'bmp', 'png',]
+      var types = ['jpg', 'jpeg', 'gif', 'bmp', 'png',]
       for (let type of types) {
         if (this.file.name.endsWith(type)) {
           this.file_type = 'img'
@@ -126,6 +126,9 @@ export default {
   },
   watch: {
     got_hashword() {
+      if (!this.file.hashed_id)
+        return
+
       var file = this.file._file_data;
       var reader = new FileReader();
       reader.onload = () => {
@@ -142,6 +145,7 @@ export default {
         this.fileReader()
       };
       reader.readAsText(file);
+
     }
   },
 }

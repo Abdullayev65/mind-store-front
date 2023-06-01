@@ -242,6 +242,9 @@ export default {
             this.mind.hashed_id = this.mind.id
             this.mind._can_hash = false
           })
+          .then(() => {
+            this.mind.hashed_id = this.mind.id
+          })
           .catch((err) => {
             alert(err)
           })
