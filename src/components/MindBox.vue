@@ -1,6 +1,11 @@
 <template>
 
-  <div class="main-box">
+  <div class="main-box" v-if="!mind._deleted">
+
+    <span class="delete-mind"
+          @click="clickDeleteMind">
+      x</span>
+
     <div @click="clickOnTopic">
     <textarea
         class="changeable-input topic"
@@ -223,6 +228,15 @@ export default {
       this.open = true
       this.loadSubMindsIfNotLoaded()
     },
+    clickDeleteMind(e) {
+      this.$store.dispatch('deleteMind', this.mind.id)
+          .then(() => {
+            this.mind._deleted = true
+          })
+          .catch((err) => {
+            alert(err)
+          })
+    },
     clickOnClose(e) {
       this.open = false
     },
@@ -329,6 +343,9 @@ export default {
   },
   mounted() {
 
+    if (!this.mind._deleted)
+      this.mind._deleted = false
+
     this.checkingHashWord()
 
   },
@@ -343,6 +360,22 @@ export default {
   margin: 0.64rem;
   border-radius: 0.45rem;
 }
+
+.delete-mind {
+  position: relative;
+  bottom: .5em;
+  left: 98.5%;
+  padding: .27em .36em;
+  border-radius: .27em;
+  background-color: red;
+  opacity: .3;
+  cursor: pointer;
+}
+
+.delete-mind:hover {
+  opacity: 1;
+}
+
 
 .content-box {
   background-color: darkgoldenrod;

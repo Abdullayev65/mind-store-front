@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@material/textfield": "^14.0.0",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "bootstrap": "^5.2.3",

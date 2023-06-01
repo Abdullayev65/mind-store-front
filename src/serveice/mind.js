@@ -32,6 +32,12 @@ const MindService = {
             headers: {"Content-Type": "multipart/form-data"},
         })
     },
+    createMind(data) {
+        return axios.post(`/mind`, data)
+    },
+    deleteMind(id) {
+        return axios.delete(`/mind/${id}`)
+    },
 
 
 }
