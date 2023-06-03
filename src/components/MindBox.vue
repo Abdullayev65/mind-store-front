@@ -2,16 +2,21 @@
 
   <div class="main-box" v-if="!mind._deleted">
 
+
+    <div @click="clickOnTopic" class="mind-overview">
+
     <span class="delete-mind"
           @click="clickDeleteMind">
       x</span>
 
-    <div @click="clickOnTopic">
     <textarea
         class="changeable-input topic"
+        :rows="mind.topic.length<30?'1':''"
         :disabled="!open"
         v-model="mind.topic"
-        @focusout="handleFocusOut_topic"></textarea>
+        @focusout="handleFocusOut_topic">
+    </textarea>
+
     </div>
 
     <div v-show="open">
@@ -378,17 +383,24 @@ export default {
 <style scoped>
 .main-box {
   background-color: chocolate;
-  padding: 1rem;
+  padding: .7em;
   margin: 0.64rem;
   border-radius: 0.45rem;
+  //background-image: url("https://blog.1a23.com/wp-content/uploads/sites/2/2020/02/Desktop.png");
+  //background-image: url("https://wallpapercave.com/wp/wp2039805.jpg");
+}
+
+.mind-overview {
+  position: relative;
 }
 
 .delete-mind {
-  position: relative;
-  bottom: .5em;
-  left: 98.5%;
-  padding: .27em .36em;
-  border-radius: .27em;
+  position: absolute;
+  top: .3em;
+  right: .3em;
+  //left: 98.5%;
+  padding: .02em .2em;
+  border-radius: 50%;
   background-color: red;
   opacity: .3;
   cursor: pointer;
@@ -408,7 +420,6 @@ export default {
 
 .changeable-input {
   margin: 0;
-  resize: none;
   background: none;
   border: none;
 }
@@ -426,8 +437,8 @@ export default {
 
 .topic {
   width: 100%;
-  height: 4.8rem;
-  padding: 0.4em 0.66em;
+  //max-height: 4.8rem;
+  padding: 0.3em 0.8em 0.3em 0.36em;
   background-color: olive;
   overflow: auto;
   color: darkblue;
@@ -437,7 +448,7 @@ export default {
 }
 
 .mind-btns {
-  display: inline-block;
+  height: 3.3em;
 }
 
 .mind-btn {

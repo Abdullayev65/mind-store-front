@@ -155,10 +155,11 @@ export default {
 <style scoped>
 
 .drive-item {
-  width: 11.6vw;
+  width: 7.6vw;
+  height: 13em;
   margin-right: 0.7em;
   display: inline-block;
-  float: left
+  float: left;
 }
 
 .drive-item:hover {

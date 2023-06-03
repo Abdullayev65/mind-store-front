@@ -117,7 +117,7 @@ export default {
 <style scoped>
 
 .drive-wrapper {
-  padding: 2em;
+  padding: .6em;
   background: #a2a6af;
   overflow: hidden;
   border-radius: .45em;

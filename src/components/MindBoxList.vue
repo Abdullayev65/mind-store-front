@@ -1,7 +1,7 @@
 <template>
 
   <h2 v-if="!subMindsLoaded">Loading...</h2>
-  <div v-else :class="'level-' + (mindLvl%3 +1)">
+  <div v-else :class="'level level-' + (mindLvl%5)">
     <MindBox
         v-for="mind in parentMind.sub_minds"
         :parentGotHashword="this['_got_hashword_id_' + mind.hashed_id]"
@@ -235,8 +235,22 @@ export default {
   }
 }
 
+.level-0 {
+  background-color: darkcyan;
+  padding: .1em;
+  border-radius: 1em;
+  margin-left: .4em;
+}
+
+.level-1 {
+  background-color: yellowgreen;
+  padding: .1em;
+  border-radius: 1em;
+  margin-left: .4em;
+}
+
 .level-2 {
-  background-color: orange;
+  background-color: steelblue;
   padding: .1em;
   border-radius: 1em;
   margin-left: .4em;
@@ -247,6 +261,17 @@ export default {
   padding: .1em;
   border-radius: 1em;
   margin-left: .4em;
+}
+
+.level-4 {
+  background-color: darkgreen;
+  padding: .1em;
+  border-radius: 1em;
+  margin-left: .4em;
+}
+
+.level {
+  margin-left: 1.3em;
 }
 
 </style>
