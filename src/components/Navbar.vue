@@ -4,6 +4,24 @@
       <img :src="logo" alt="logo" class="logo cursor-pointer"/>
     </a>
 
+    <div class="input-group search-input">
+      <div class="form-outline">
+        <input type="search"
+               v-on:keyup.enter="clickOnSearchButton"
+               v-model="searchUsername"
+               id="form1"
+               placeholder="Search username..."
+               class="form-control"/>
+        <label class="form-label" for="form1"></label>
+      </div>
+      <button type="button"
+              @click="clickOnSearchButton"
+              class="btn btn-primary"
+              style="height: 2.4rem">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+
     <template v-if="isLoggedIn">
       <div class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
 
@@ -29,18 +47,24 @@
         </RouterLink>
       </nav>
     </template>
+
+
   </div>
+
+
 </template>
 
 <script>
 // import {mapGetters} from 'vuex'
 import {logo} from '@/constants'
 import {mapGetters} from "vuex";
+import dataHasher from "@/helpers/dataHasher";
 
 export default {
   data() {
     return {
       logo,
+      searchUsername: '',
     }
   },
   methods: {
@@ -50,6 +74,16 @@ export default {
     logout() {
       this.$store.dispatch('logout')
       return this.$router.push({name: "login"})
+    },
+    clickOnSearchButton(e) {
+      // alert(this.searchUsername)
+
+      this.$router.push({
+        name: "search",
+        query: {
+          username: this.searchUsername
+        }
+      })
     },
   },
   computed: {
@@ -70,4 +104,9 @@ export default {
 .logo {
   width: 5rem;
 }
+
+.search-input {
+  margin-left: 6rem;
+}
+
 </style>

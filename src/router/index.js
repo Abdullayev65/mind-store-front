@@ -19,6 +19,12 @@ const router = createRouter({
             name: "login",
             component: all.LoginView
         },
+        {
+            path: "/search",
+            name: "search",
+            component: all.SearchView
+        },
+
     ]
 })
 

@@ -9,7 +9,10 @@ const AuthService = {
     },
     getUser() {
         return axios.get('user/me')
-    }
+    },
+    searchUsers(params) {
+        return axios.get('user/search', {params})
+    },
 }
 
 
