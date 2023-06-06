@@ -20,9 +20,9 @@ export default {
     Navbar,
   },
   mounted() {
-    this.$store.dispatch('getUser')
+    this.$store.dispatch('getUserMe')
         .catch(() => {
-          this.$router.push({name: "login"})
+          // this.$router.push({name: "login"})
         })
 
   }

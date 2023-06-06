@@ -7,8 +7,11 @@ const AuthService = {
     login(user) {
         return axios.post("auth/log-in", user)
     },
-    getUser() {
+    getUserMe() {
         return axios.get('user/me')
+    },
+    getUserByUsername(username) {
+        return axios.get(`user/${username}`)
     },
     searchUsers(params) {
         return axios.get('user/search', {params})

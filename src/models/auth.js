@@ -69,6 +69,20 @@ const mutations = {
         state.user = null
         state.isLoggedIn = false
     },
+    getUserByUsernameStart(state) {
+        // state.isLoading = true
+    },
+    getUserByUsernameSuccess(state, user) {
+        // state.isLoading = false
+        // state.user = user
+        // state.isLoggedIn = true
+    },
+    getUserByUsernameFail(state, err) {
+        // state.isLoading = false
+        // state.err = err
+        // state.user = null
+        // state.isLoggedIn = false
+    },
     logout(state) {
         state.user = null
         state.isLoggedIn = false
@@ -119,11 +133,11 @@ const actions = {
                 })
         })
     },
-    getUser(ctx) {
+    getUserMe(ctx) {
         return new Promise((resolve, reject) => {
             ctx.commit('currentUserStart')
 
-            AuthService.getUser()
+            AuthService.getUserMe()
                 .then((res) => {
                     if (res.data['status']) {
                         const user = res.data['res']
@@ -136,6 +150,28 @@ const actions = {
                 })
                 .catch((err) => {
                     ctx.commit('currentUserFail', err)
+                    console.log(`err:`, err)
+                    reject(err)
+                })
+        })
+    },
+    getUserByUsername(ctx, username) {
+        return new Promise((resolve, reject) => {
+            ctx.commit('getUserByUsernameStart')
+
+            AuthService.getUserByUsername(username)
+                .then((res) => {
+                    if (res.data['status']) {
+                        const user = res.data['res']
+                        ctx.commit('getUserByUsernameSuccess', user)
+                        resolve(user)
+                    } else {
+                        ctx.commit('getUserByUsernameFail', res.data['msg'])
+                        reject(res.data['msg'])
+                    }
+                })
+                .catch((err) => {
+                    ctx.commit('getUserByUsernameFail', err)
                     console.log(`err:`, err)
                     reject(err)
                 })

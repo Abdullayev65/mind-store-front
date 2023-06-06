@@ -18,9 +18,10 @@
 
       <label class="filled add-mind-label">
         <input class="add-mind-input "
+               id="add-new-topic"
                type="text" required
                v-model="newTopic"
-               v-on:keyup.enter="makeNewTopic"
+               v-on:keyup.enter="enterNewTopic"
                @focusout="makeNewTopic">
         <span data-label="Enter new topic"></span>
       </label>
@@ -69,7 +70,12 @@ export default {
     }),
   },
   methods: {
+    enterNewTopic() {
+      document.getElementById('add-new-topic').blur();
+      this.makeNewTopic()
+    },
     makeNewTopic() {
+
       const newTopic = this.newTopic
       this.newTopic = ''
       if (!newTopic)
@@ -94,7 +100,7 @@ export default {
           })
           .catch((err) => {
             alert(err)
-            this.newTopic = newTopic
+            // this.newTopic = newTopic
           })
     },
     gotHashword(hashed_id) {

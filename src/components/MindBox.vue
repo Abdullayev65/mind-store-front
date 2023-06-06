@@ -1,5 +1,6 @@
 <template>
 
+
   <div class="main-box" v-if="!mind._deleted">
 
 
@@ -7,14 +8,27 @@
 
     <span class="delete-mind"
           @click="clickDeleteMind">
-      x</span>
+    x</span>
 
-    <textarea
-        class="changeable-input topic"
-        :rows="mind.topic.length<30?'1':''"
-        :disabled="!open"
-        v-model="mind.topic"
-        @focusout="handleFocusOut_topic">
+      <span
+          style="background-color: dodgerblue"
+            class="share-btn" @click="clickShareMind">
+          <button
+              style="background: none; border: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share"
+                 viewBox="0 0 16 16">
+              <path
+                  d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+            </svg>
+          </button>
+    </span>
+
+      <textarea
+          class="changeable-input topic"
+          :rows="mind.topic.length<30?'1':''"
+          :disabled="!open"
+          v-model="mind.topic"
+          @focusout="handleFocusOut_topic">
     </textarea>
 
     </div>
@@ -171,6 +185,10 @@ export default {
     parentGotHashword: {
       type: Object,
     },
+    isOpen: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -252,6 +270,9 @@ export default {
           .catch((err) => {
             alert(err)
           })
+    },
+    clickShareMind(e) {
+      alert("clickShareMind")
     },
     clickOnClose(e) {
       this.open = false
@@ -363,6 +384,8 @@ export default {
 
     if (!this.mind._deleted)
       this.mind._deleted = false
+    if (this.isOpen)
+      this.open = true
 
     this.checkingHashWord()
 
@@ -386,8 +409,7 @@ export default {
   padding: .7em;
   margin: 0.64rem;
   border-radius: 0.45rem;
-  //background-image: url("https://blog.1a23.com/wp-content/uploads/sites/2/2020/02/Desktop.png");
-  //background-image: url("https://wallpapercave.com/wp/wp2039805.jpg");
+//background-image: url("https://blog.1a23.com/wp-content/uploads/sites/2/2020/02/Desktop.png"); //background-image: url("https://wallpapercave.com/wp/wp2039805.jpg");
 }
 
 .mind-overview {
@@ -398,15 +420,23 @@ export default {
   position: absolute;
   top: .3em;
   right: .3em;
-  //left: 98.5%;
-  padding: .02em .2em;
-  border-radius: 50%;
-  background-color: red;
-  opacity: .3;
-  cursor: pointer;
+//left: 98.5%; padding: .02em .2em; border-radius: 50%; background-color: red; opacity: .3; cursor: pointer;
 }
 
 .delete-mind:hover {
+  opacity: 1;
+}
+
+.share-btn {
+  position: absolute;
+  top: 2.1em;
+  right: -0.7em;
+  border-radius: 3em;
+  color: blue;
+//left: 98.5%; padding: .02em .2em; border-radius: 50%; background-color: red; opacity: .3; cursor: pointer;
+}
+
+.share-btn:hover {
   opacity: 1;
 }
 
@@ -437,14 +467,7 @@ export default {
 
 .topic {
   width: 100%;
-  //max-height: 4.8rem;
-  padding: 0.3em 0.8em 0.3em 0.36em;
-  background-color: olive;
-  overflow: auto;
-  color: darkblue;
-  font-weight: bold;
-  font-size: 1.27rem;
-  border-radius: 0.45rem;
+//max-height: 4.8rem; padding: 0.3em 0.8em 0.3em 0.36em; background-color: olive; overflow: auto; color: darkblue; font-weight: bold; font-size: 1.27rem; border-radius: 0.45rem;
 }
 
 .mind-btns {

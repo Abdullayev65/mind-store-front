@@ -12,15 +12,21 @@ import {mapGetters} from "vuex";
 export default defineComponent({
   components: {MindBoxList},
   data() {
-    return {}
+    return {
+      user: null,
+      username: '',
+    }
   },
-  computed: {
-    ...mapGetters({
-      user: 'auth__user',
-      // isLoggedIn: 'auth__isLoggedIn',
-      // isAnonymous: 'auth__isAnonymous',
-    }),
-  }
+  mounted() {
+    this.username = this.$route.params.username
+    this.$store.dispatch('getUserByUsername', this.username)
+        .then((user) => {
+          this.user =user
+        })
+        .catch((err) => {
+          alert(err)
+        })
+  },
 })
 </script>
 
