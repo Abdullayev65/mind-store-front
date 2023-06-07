@@ -4,8 +4,6 @@
   <div v-else :class="'level level-' + (mindLvl%5)">
     <MindBox
         v-for="mind in parentMind.sub_minds"
-        :parentGotHashword="this['_got_hashword_id_' + mind.hashed_id]"
-        @gotHashword="gotHashword"
         :mind="mind">
       <MindBoxList
           :gotHashwordIdParent="this['_got_hashword_id_' + mind.hashed_id]"
@@ -103,12 +101,6 @@ export default {
             // this.newTopic = newTopic
           })
     },
-    gotHashword(hashed_id) {
-      this.set_got_hashword_id(hashed_id, hashed_id)
-    },
-    set_got_hashword_id(hashed_id, val) {
-      this['_got_hashword_id_' + hashed_id] = val
-    }
   },
   mounted() {
     this.$store.dispatch('getMindById', this.parentMindId)
@@ -116,9 +108,6 @@ export default {
           this.parentMind = this.mindsMap.get(this.parentMindId)
           if (this.parentMind.sub_minds) {
             let sub_minds = this.parentMind.sub_minds
-            for (let idx in sub_minds) {
-              this.set_got_hashword_id(sub_minds[idx].hashed_id, false)
-            }
           }
 
           this.subMindsLoaded = true
@@ -128,9 +117,6 @@ export default {
         })
   },
   watch: {
-    gotHashwordIdParent() {
-      this.set_got_hashword_id(this.gotHashwordIdParent, this.gotHashwordIdParent)
-    }
   }
 }
 </script>

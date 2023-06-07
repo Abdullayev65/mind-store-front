@@ -416,16 +416,12 @@ export default {
 
   },
   watch: {
-    [`$store.state.gotHashword`]() {
-      if (this.mind._hashword || !this.mind.hashed_id)
+    [`$store.state.lastSetHashword`]() {
+      if (this.mind._hashword || this.$store.state.lastSetHashword !== this.mind.hashed_id)
         return
 
-      const hashword = this.$store.state.getHashword(this.mind.hashed_id)
-      alert(hashword)
-      if (hashword) {
-        this.mind._hashword = hashword
-        this.parentGotHashword()
-      }
+      this.mind._hashword = this.$store.state.getHashword(this.mind.hashed_id)
+      this.parentGotHashword()
     }
   },
 }

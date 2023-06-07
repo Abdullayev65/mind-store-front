@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     onUploadFile(e) {
-
+      console.log(this.mind)
       let files = e.target.files
 
       for (let i = 0; i < files.length; i++) {

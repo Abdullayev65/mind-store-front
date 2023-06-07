@@ -7,11 +7,11 @@ import user from "@/models/user.js";
 const store = createStore({
     state() {
         return {
-            gotHashword: 0,
+            lastSetHashword: '',
             hashwordMap: new Map(),
             setHashword(hashwordId, hashword) {
                 store.state.hashwordMap.set(hashwordId, hashword)
-                store.state.gotHashword++
+                store.state.lastSetHashword = hashwordId
             },
             getHashword(hashwordId) {
                 return store.state.hashwordMap.get(hashwordId)
