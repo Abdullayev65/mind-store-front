@@ -25,9 +25,9 @@ const router = createRouter({
             component: all.SearchView
         },
         {
-            path: "/:username",
+            path: "/mind/:mind_id",
             name: "userMind",
-            component: all.UserMindView
+            component: all.MindView
         },
 
     ]

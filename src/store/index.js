@@ -5,7 +5,20 @@ import file from "@/models/file.js";
 import user from "@/models/user.js";
 
 const store = createStore({
-    state: {},
+    state() {
+        return {
+            gotHashword: 0,
+            hashwordMap: new Map(),
+            setHashword(hashwordId, hashword) {
+                store.state.hashwordMap.set(hashwordId, hashword)
+                store.state.gotHashword++
+            },
+            getHashword(hashwordId) {
+                return store.state.hashwordMap.get(hashwordId)
+            },
+
+        }
+    },
     mutations: {},
     actions: {},
     modules: {

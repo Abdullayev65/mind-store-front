@@ -106,7 +106,7 @@ const mutations = {
 }
 
 const actions = {
-    getById(ctx, id) {
+    getMindById(ctx, id) {
         return new Promise((resolve, reject) => {
             ctx.commit('getByIdStart')
 

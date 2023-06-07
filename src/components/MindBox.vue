@@ -10,9 +10,10 @@
           @click="clickDeleteMind">
     x</span>
 
+      <!-- share-btn -->
       <span
           style="background-color: dodgerblue"
-            class="share-btn" @click="clickShareMind">
+          class="share-btn" @click="clickShareMind">
           <button
               style="background: none; border: none;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share"
@@ -22,6 +23,12 @@
             </svg>
           </button>
     </span>
+
+
+      <!--      <div class="alert alert-success" role="alert">-->
+      <!--        A simple success alert—check it out!-->
+      <!--      </div>-->
+
 
       <textarea
           class="changeable-input topic"
@@ -169,6 +176,8 @@
 import {mapState} from "vuex";
 import dataHasher from "@/helpers/dataHasher.js";
 import MindFileList from "@/components/MindFileList.vue";
+import {createToast} from 'mosha-vue-toastify';
+import 'mosha-vue-toastify/dist/style.css'
 
 export default {
   components: {MindFileList},
@@ -181,9 +190,6 @@ export default {
     mind: {
       type: Object,
       required: true,
-    },
-    parentGotHashword: {
-      type: Object,
     },
     isOpen: {
       type: Boolean,
@@ -271,8 +277,19 @@ export default {
             alert(err)
           })
     },
-    clickShareMind(e) {
-      alert("clickShareMind")
+    async clickShareMind(e) {
+      // toast.success("<><><><ssa", 3000)
+
+      try {
+        const url = `mind-store.uz/mind/${this.mind.id}`
+        await navigator.clipboard.writeText(url);
+
+        createToast(`url copied ${url}`)
+
+      } catch ($e) {
+        alert('Cannot copy');
+      }
+
     },
     clickOnClose(e) {
       this.open = false
@@ -317,6 +334,7 @@ export default {
       }
 
       this.unhashingData()
+      // ----
       this.mindsMap.set(this.mind.id, this.mind)
       this._gotHashword()
       this.model_set_hashword = false
@@ -377,7 +395,14 @@ export default {
       this.mind._hashword = ''
     },
     _gotHashword() {
-      this.$emit('gotHashword', this.mind.hashed_id)
+      this.$store.state.setHashword(this.mind.hashed_id, this.mind._hashword)
+    },
+    parentGotHashword() {
+      this.unhashingData()
+      this.model_set_hashword = false
+      this.canEditMindFields = true
+      this.canEditMindTopic = true
+      this.got_hashword = true
     },
   },
   mounted() {
@@ -391,12 +416,16 @@ export default {
 
   },
   watch: {
-    parentGotHashword() {
-      this.unhashingData()
-      this.model_set_hashword = false
-      this.canEditMindFields = true
-      this.canEditMindTopic = true
-      this.got_hashword = true
+    [`$store.state.gotHashword`]() {
+      if (this.mind._hashword || !this.mind.hashed_id)
+        return
+
+      const hashword = this.$store.state.getHashword(this.mind.hashed_id)
+      alert(hashword)
+      if (hashword) {
+        this.mind._hashword = hashword
+        this.parentGotHashword()
+      }
     }
   },
 }

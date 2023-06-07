@@ -1,32 +1,48 @@
 <template>
-  <h1 class="text-center"> Mind </h1>
-  <MindBox is-open="" :mind="user.mind_id"/>
+  <h1 class="text-center"> Mind [{{ this.$store.state.counter }}] </h1>
+  <h3 v-if="err" class="text-center"> {{ err }} </h3>
+
+  <div v-if="mindLoaded">
+    <MindBox isOpen="true" :mind="mind">
+      <MindBoxList :parentMindId="mind_id"/>
+    </MindBox>
+  </div>
+
 </template>
 
 <script>
 
 import {defineComponent} from "vue";
+import MindBox from "@/components/MindBox.vue";
 import MindBoxList from "@/components/MindBoxList.vue";
-import {mapGetters} from "vuex";
+import store from "@/store";
 
 export default defineComponent({
-  components: {MindBoxList},
+  computed: {
+    store() {
+      return store
+    }
+  },
+  components: {MindBox, MindBoxList},
   data() {
     return {
-      user: null,
-      username: '',
+      mind: null,
+      mind_id: '',
+      mindLoaded: false,
+      err: ''
     }
   },
   mounted() {
-    this.username = this.$route.params.username
-    this.$store.dispatch('getUserByUsername', this.username)
-        .then((user) => {
-          this.user =user
+    this.mind_id = this.$route.params.mind_id
+    this.$store.dispatch('getMindById', this.mind_id)
+        .then((mind) => {
+          this.mind = mind
+          this.mindLoaded = true
         })
         .catch((err) => {
-          alert(err)
+          this.err = `mind not found\n${err}`
         })
-  },
+  }
 })
 </script>
 

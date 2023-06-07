@@ -111,7 +111,7 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch('getById', this.parentMindId)
+    this.$store.dispatch('getMindById', this.parentMindId)
         .then((m) => {
           this.parentMind = this.mindsMap.get(this.parentMindId)
           if (this.parentMind.sub_minds) {
