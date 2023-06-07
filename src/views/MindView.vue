@@ -1,6 +1,6 @@
 <template>
   <h1 class="text-center"> Mind [{{ this.$store.state.counter }}] </h1>
-  <h3 v-if="err" class="text-center"> {{ err }} </h3>
+  <h3 v-if="err" class="text-center text-bg-dark"> {{ err }} </h3>
 
   <div v-if="mindLoaded">
     <MindBox isOpen="true" :mind="mind">
@@ -40,7 +40,7 @@ export default defineComponent({
           this.mindLoaded = true
         })
         .catch((err) => {
-          this.err = `mind not found\n${err}`
+          this.err = err
         })
   }
 })

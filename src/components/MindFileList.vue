@@ -11,10 +11,10 @@
           :got_hashword="got_hashword"/>
 
       <div :style="canAddNewFile?'':'display: none'">
-        <label for="add-file" class="add-file">
+        <label :for="`add-file-mind-${mind.id}`" class="add-file">
           <i class="fa-solid fa-file-circle-plus fa-2xl"></i>
         </label>
-        <input type="file" id="add-file" style="display: none" @change="onUploadFile">
+        <input type="file" :id="`add-file-mind-${mind.id}`" style="display: none" @change="onUploadFile">
       </div>
 
     </div>

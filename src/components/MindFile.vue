@@ -9,9 +9,11 @@
       <div class="drive-item-thumb"><a href="#">
 
 
-        <img v-if="file_type==='img'" class="file-img img-thumbnail"
+        <img v-if="preview && file_type==='img'" class="file-img img-thumbnail"
+             v-gallery="mind.id"
              :src="preview"
-             :alt="file.url">
+             :alt="file.url" />
+
         <!--        <i class="fa-solid fa-file"></i>-->
         <i v-else class="fa-solid fa-file fa-2xl file-icon"></i>
 
@@ -53,7 +55,7 @@ export default {
   data() {
     return {
       hashed_mind: null,
-      preview: null,
+      preview: '',
       file_type: '', // 'img', other
       display_none: false,
     }
@@ -66,6 +68,7 @@ export default {
           })
           .then((res) => {
             this.file._file_data = new File([res.data], this.file.name);
+            if (this.file.hashed_id)
             this.fileReader()
           })
     },
