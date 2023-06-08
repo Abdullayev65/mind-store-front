@@ -156,6 +156,7 @@
             class="caption changeable-input"
             v-model="mind.caption"
             :disabled="!canEditMindFields"
+            :rows="(!mind.caption || mind.caption.length<30)?'1':''"
             @focusout="handleFocusOut_caption"></textarea>
       </div>
 
@@ -178,6 +179,7 @@ import dataHasher from "@/helpers/dataHasher.js";
 import MindFileList from "@/components/MindFileList.vue";
 import {createToast} from 'mosha-vue-toastify';
 import 'mosha-vue-toastify/dist/style.css'
+import {domain} from "@/constants/domain.js";
 
 export default {
   components: {MindFileList},
@@ -281,7 +283,7 @@ export default {
       // toast.success("<><><><ssa", 3000)
 
       try {
-        const url = `mind-store.uz/mind/${this.mind.id}`
+        const url = `${domain}/mind/${this.mind.id}`
         await navigator.clipboard.writeText(url);
 
         createToast(`url copied ${url}`)
@@ -468,7 +470,7 @@ export default {
 
 .content-box {
   background-color: darkgoldenrod;
-  padding: 1.5rem;
+/*  padding: 1.5rem;*/
   margin: 0.3rem;
   border-radius: 0.45rem;
 }
@@ -481,8 +483,8 @@ export default {
 
 .caption {
   width: 100%;
-  height: 6.4rem;
-  padding: 0.25em;
+/*  height: 6.4rem;*/
+  padding: 0.56em 0.25em;
   overflow: auto;
   color: darkblue;
   font-weight: bold;
