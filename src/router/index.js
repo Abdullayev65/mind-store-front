@@ -29,6 +29,11 @@ const router = createRouter({
             name: "userMind",
             component: all.MindView
         },
+        {
+            path: "/:username",
+            name: "userMinds",
+            component: all.UserMindView
+        },
 
     ]
 })
