@@ -6,7 +6,9 @@
       <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
       <ValidationErr v-if="validationErrs" :validationErrs="validationErrs"/>
-      <Input :label="'Name'" :type="'text'" v-model="name"/>
+      <Input :label="'First Name'" :type="'text'" v-model="firstName"/>
+      <Input :label="'Last Name'" :type="'text'" v-model="lastName"/>
+      <Input :label="'Username'" :type="'text'" v-model="username"/>
       <Input :label="'Email address'" :type="'email'" v-model="email"/>
       <Input :label="'Password'" :type="'password'" v-model="password"/>
 
@@ -31,7 +33,9 @@ export default {
   data() {
     return {
       logo,
-      name: '',
+      username: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
     }
@@ -40,10 +44,11 @@ export default {
     submitHandler(e) {
       e.preventDefault()
       const data = {
-        username: this.name,
+        first_name: this.firstName,
+        last_name: this.lastName,
+        username: this.username,
         email: this.email,
         password: this.password,
-        first_name: this.name,
       }
 
       this.$store.dispatch("register", data).then(user => {
