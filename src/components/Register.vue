@@ -15,7 +15,7 @@
       <Button type="submit"
               @click="submitHandler"
               :disabled="isLoading">
-        Sign in
+        Sign up
       </Button>
     </form>
   </main>
