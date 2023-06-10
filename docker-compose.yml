@@ -1,0 +1,6 @@
+version: '1'
+
+services:
+  mind_front_2.3:
+    build: "."
+    network_mode: host
