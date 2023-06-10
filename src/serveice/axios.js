@@ -4,6 +4,7 @@ import localStore from "@/helpers/persistaneStorage";
 axios.defaults.baseURL = "https://mind-store.jprq.live/api/v1"
 axios.defaults.baseURL = "https://back-end.jprq.live/api/v1"
 axios.defaults.baseURL = "http://localhost:8765/api/v1"
+axios.defaults.baseURL = "http://95.130.227.70:8765/api/v1"
 
 axios.interceptors.request.use(cnfg => {
     const token = localStore.getItem('token')
